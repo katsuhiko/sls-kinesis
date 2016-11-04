@@ -1,0 +1,23 @@
+{
+  "name": "sls-kinesis",
+  "version": "0.1.0",
+  "description": "To use the Kinesis Stream.",
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/katsuhiko/sls-kinesis.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.6.15",
+    "uuid": "^2.0.3",
+    "moment": "^2.15.2",
+    "dotenv": "2.0.0"
+  },
+  "devDependencies": {
+    "serverless-plugin-write-env-vars": "1.0.1"
+  }
+}

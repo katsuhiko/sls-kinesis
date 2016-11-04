@@ -1,0 +1,68 @@
+service: sls-kinesis
+
+provider:
+  name: aws
+  runtime: nodejs4.3
+  stage: ${opt:stage, self:custom.defaultStage}
+  region: ${opt:region, self:custom.defaultRegion}
+  profile: ${self:custom.profiles.${self:provider.stage}}
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - kinesis:DescribeStream
+        - kinesis:PutRecord
+        - kinesis:ListStreams
+      Resource: "arn:aws:kinesis:${self:provider.region}:*:stream/${self:provider.stage}-todos"
+
+custom:
+  defaultStage: dev
+  defaultRegion: ap-northeast-1
+  profiles:
+    dev: devSls
+    prod: prodSls
+  writeEnvVars:
+    STAGE: ${self:provider.stage}
+
+package:
+  exclude:
+    - .git/**
+    - README.md
+    - node_modules/serverless-plugin-write-env-vars/**
+
+plugins:
+  - serverless-plugin-write-env-vars
+
+functions:
+  todosCreate:
+    handler: handler.todosCreate
+    events:
+      - http:
+          path: todos
+          method: post
+          cors: true
+
+  todosUpdate:
+    handler: handler.todosUpdate
+    events:
+      - http:
+          path: todos/{id}
+          method: patch
+          cors: true
+
+  todosDelete:
+    handler: handler.todosDelete
+    events:
+      - http:
+          path: todos/{id}
+          method: delete
+          cors: true
+
+resources:
+  Resources:
+    TodosKinesisStream:
+      Type: 'AWS::Kinesis::Stream'
+      DeletionPolicy: Retain
+      Properties:
+        Name: "${self:provider.stage}-todos"
+        ShardCount: 1
